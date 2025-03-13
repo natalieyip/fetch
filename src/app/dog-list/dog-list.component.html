@@ -1,0 +1,38 @@
+<mat-form-field>
+    <mat-label>Breeds</mat-label>
+    <mat-select
+        [formControl]="dogBreedsFilter"
+        multiple
+        (selectionChange)="onSelectedDogs($event)"
+    >
+        <mat-option
+            *ngFor="let dogBreeds of allDogBreeds"
+            [value]="dogBreeds"
+            >{{ dogBreeds }}</mat-option
+        >
+    </mat-select>
+</mat-form-field>
+
+<mat-form-field>
+    <mat-label>Sort By</mat-label>
+    <mat-select (selectionChange)="onSortChange($event)">
+        <mat-option *ngFor="let opt of sortOptions" [value]="opt">{{
+            opt.optionDisplay
+        }}</mat-option>
+    </mat-select>
+</mat-form-field>
+
+<div class="dog-list-container">
+    <div *ngFor="let dog of allDogs">
+        <dog-card [dogDetails]="dog"></dog-card>
+    </div>
+</div>
+
+<mat-paginator #paginator
+               (page)="handlePageEvent($event)"
+               [length]="length"
+               [pageSize]="pageSize"
+               [pageSizeOptions]="showPageSizeOptions ? pageSizeOptions : []"
+               [pageIndex]="pageIndex"
+               aria-label="Select page">
+</mat-paginator>
