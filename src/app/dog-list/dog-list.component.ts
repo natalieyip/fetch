@@ -50,6 +50,8 @@ export class DogListComponent implements OnInit {
     nextLink: string; 
     prevLink: string;
 
+    favoriteDogIds: string[] = [];
+
     constructor(private dogService: DogService) {}
 
     ngOnInit(): void {
@@ -159,5 +161,16 @@ export class DogListComponent implements OnInit {
         this.length = e.length;
         this.pageSize = e.pageSize;
         this.pageIndex = e.pageIndex;
+    }
+
+    handleFavoriteDogs(event: any) {
+
+        if (event.is_favorite) {
+            this.favoriteDogIds.push(event.id)
+        } else {
+            const dogIdIndex = this.favoriteDogIds.indexOf(event.id)
+            this.favoriteDogIds.splice(dogIdIndex, 1)
+        }
+        console.log(this.favoriteDogIds);
     }
 }

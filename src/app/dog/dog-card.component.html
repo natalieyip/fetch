@@ -3,4 +3,5 @@
     <div>{{ dogDetails.name }}, {{ dogDetails.age }}</div>
     <div>{{ dogDetails.breed }}</div>
     <div>{{ dogDetails.zip_code }}</div>
+    <mat-icon [ngStyle]="dogDetails.is_favorite ? {'color': 'red'} : {'color': 'black'}" (click)="onFavorite()" aria-label="favorite-icon" fontIcon="favorite"></mat-icon>
 </div>

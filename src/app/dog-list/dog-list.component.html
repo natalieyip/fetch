@@ -24,7 +24,7 @@
 
 <div class="dog-list-container">
     <div *ngFor="let dog of allDogs">
-        <dog-card [dogDetails]="dog"></dog-card>
+        <dog-card [dogDetails]="dog" (favoritedDog)="handleFavoriteDogs($event)"></dog-card>
     </div>
 </div>
 

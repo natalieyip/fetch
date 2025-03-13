@@ -5,4 +5,5 @@ export interface Dog {
     age: number;
     zip_code: string;
     breed: string;
+    is_favorite: boolean; 
 }
