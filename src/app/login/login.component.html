@@ -1,15 +1,19 @@
-<form class="login-form">
-    <mat-form-field>
-        <mat-label>Name</mat-label>
-        <input matInput #message maxlength="256" placeholder="Name" />
-    </mat-form-field>
-
-    <mat-form-field>
-        <mat-label>Email</mat-label>
-        <input matInput #message maxlength="256" placeholder="Email" />
-    </mat-form-field>
-
-    <button mat-stroked-button type="button" (click)="onLoginBtn()">
-        Submit
-    </button>
-</form>
+<div class="login-form-container">
+    <form class="login-form">
+        <h1> Fetch </h1>
+        <mat-form-field>
+            <mat-label>Name</mat-label>
+            <input matInput #message maxlength="256" placeholder="Name" />
+        </mat-form-field>
+    
+        <mat-form-field>
+            <mat-label>Email</mat-label>
+            <input matInput #message maxlength="256" placeholder="Email" />
+        </mat-form-field>
+    
+        <button mat-stroked-button type="button" (click)="onLoginBtn()">
+            Login
+        </button>
+    </form>
+    
+</div>
