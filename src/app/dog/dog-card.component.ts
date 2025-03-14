@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Dog } from './dog.model';
-import {MatIconModule} from '@angular/material/icon';
+import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'dog-card',
-    imports: [ MatIconModule, CommonModule ],
+    imports: [MatIconModule, CommonModule],
     templateUrl: './dog-card.component.html',
     styleUrl: './dog-card.component.scss',
 })
@@ -17,8 +17,7 @@ export class DogCardComponent {
     favoritedDog = new EventEmitter<Dog>();
 
     onFavorite() {
-        this.dogDetails.is_favorite = !this.dogDetails.is_favorite; 
-        this.favoritedDog.emit(this.dogDetails); 
-        
+        this.dogDetails.is_favorite = !this.dogDetails.is_favorite;
+        this.favoritedDog.emit(this.dogDetails);
     }
 }

@@ -1,0 +1,12 @@
+<h2 mat-dialog-title>Your New Best Friend</h2>
+<mat-dialog-content>
+    <img src="{{ dogDetails.img }}" alt="dog" width="300" height="300" />
+    <div>
+        Our systems has found you a new furry friend: {{ dogDetails.name }}
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close type="button" cdkFocusInitial>
+        Adopt Now
+    </button>
+</mat-dialog-actions>

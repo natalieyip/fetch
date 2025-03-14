@@ -22,17 +22,26 @@
     </mat-select>
 </mat-form-field>
 
+<button mat-stroked-button type="button" (click)="loadingNewBff()">
+    Match Me to My New BFF
+</button>
+
 <div class="dog-list-container">
     <div *ngFor="let dog of allDogs">
-        <dog-card [dogDetails]="dog" (favoritedDog)="handleFavoriteDogs($event)"></dog-card>
+        <dog-card
+            [dogDetails]="dog"
+            (favoritedDog)="handleFavoriteDogs($event)"
+        ></dog-card>
     </div>
 </div>
 
-<mat-paginator #paginator
-               (page)="handlePageEvent($event)"
-               [length]="length"
-               [pageSize]="pageSize"
-               [pageSizeOptions]="showPageSizeOptions ? pageSizeOptions : []"
-               [pageIndex]="pageIndex"
-               aria-label="Select page">
+<mat-paginator
+    #paginator
+    (page)="handlePageEvent($event)"
+    [length]="length"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="showPageSizeOptions ? pageSizeOptions : []"
+    [pageIndex]="pageIndex"
+    aria-label="Select page"
+>
 </mat-paginator>

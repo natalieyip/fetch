@@ -7,7 +7,10 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { SortOptions } from '../sortOptions';
-import {PageEvent, MatPaginatorModule} from '@angular/material/paginator';
+import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatchedDogModalComponent } from '../matched-dog-modal/matched-dog-modal.component';
 
 @Component({
     selector: 'dog-list',
@@ -18,7 +21,9 @@ import {PageEvent, MatPaginatorModule} from '@angular/material/paginator';
         MatFormFieldModule,
         FormsModule,
         ReactiveFormsModule,
-        MatPaginatorModule
+        MatPaginatorModule,
+        MatButtonModule,
+        MatDialogModule,
     ],
     templateUrl: './dog-list.component.html',
     styleUrl: './dog-list.component.scss',
@@ -30,12 +35,12 @@ export class DogListComponent implements OnInit {
     selectedDogBreeds: string[];
     selectSortOption: string;
     sortOptions: SortOptions[] = [
-        {option: 'name:asc', optionDisplay: 'Name: A-Z'},
-        {option: 'name:desc', optionDisplay: 'Name: Z-A'},
-        {option: 'breed:asc', optionDisplay: 'Breed: A-Z'},
-        {option: 'breed:desc', optionDisplay: 'Breed: Z-A'},
-        {option: 'age:asc', optionDisplay: 'Age: Low to High'},
-        {option: 'age:desc', optionDisplay: 'Age: High to Low'}
+        { option: 'name:asc', optionDisplay: 'Name: A-Z' },
+        { option: 'name:desc', optionDisplay: 'Name: Z-A' },
+        { option: 'breed:asc', optionDisplay: 'Breed: A-Z' },
+        { option: 'breed:desc', optionDisplay: 'Breed: Z-A' },
+        { option: 'age:asc', optionDisplay: 'Age: Low to High' },
+        { option: 'age:desc', optionDisplay: 'Age: High to Low' },
     ];
 
     length: number;
@@ -47,12 +52,15 @@ export class DogListComponent implements OnInit {
     showPageSizeOptions = true;
 
     pageEvent: PageEvent;
-    nextLink: string; 
+    nextLink: string;
     prevLink: string;
 
     favoriteDogIds: string[] = [];
 
-    constructor(private dogService: DogService) {}
+    constructor(
+        private dogService: DogService,
+        private dialogRef: MatDialog,
+    ) {}
 
     ngOnInit(): void {
         this.dogService.getAllDogBreeds().subscribe((breeds) => {
@@ -75,77 +83,10 @@ export class DogListComponent implements OnInit {
     onSelectedDogs(selectedDogs: MatSelectChange) {
         this.selectedDogBreeds = selectedDogs.value;
         this.pageIndex = 0;
-        this.dogService.getAllDogs(this.selectedDogBreeds, this.selectSortOption).subscribe((res: any) => {
-            console.log(res);
-                
-            this.length = res.total;
-            this.nextLink = res.next;
-            this.dogService
-                .searchDogs(res.resultIds)
-                .then((r) => {
-                    return r.json();
-                })
-                .then((data) => {
-                    this.allDogs = data;
-                });
-        });
-    }
-
-    onSortChange(sortBy: MatSelectChange) {
-        this.selectSortOption = sortBy.value.option;
-        this.pageIndex = 0;
-        this.dogService.getAllDogs(this.selectedDogBreeds, this.selectSortOption).subscribe((res: any) => {
-            this.length = res.total;
-            
-            this.dogService
-                .searchDogs(res.resultIds)
-                .then((r) => {
-                    return r.json();
-                })
-                .then((data) => {
-                    this.allDogs = data;
-                });
-        });
-    }
-
-    handlePageEvent(e: PageEvent) {
-        if(e.pageSize !== this.pageSize) {
-            this.pageIndex = 0;
-            this.dogService.getAllDogs(this.selectedDogBreeds, this.selectSortOption, e.pageSize).subscribe((res: any) => {
-                this.dogService
-                    .searchDogs(res.resultIds)
-                    .then((r) => {
-                        return r.json();
-                    })
-                    .then((data) => {
-                        this.allDogs = data;
-                    });
-            });
-        }
-
-        if (e.pageIndex > 0 && e.previousPageIndex < e.pageIndex ) {
-            console.log(this.nextLink);
-            this.dogService.getNextOrPreviousPage(this.nextLink).subscribe((res: any) => {
-                this.prevLink = res.prev;
-                console.log(res);
-
-                if (res.next) {
-                    this.nextLink = res.next;
-                }
-                this.dogService
-                    .searchDogs(res.resultIds)
-                    .then((r) => {
-                        return r.json();
-                    })
-                    .then((data) => {
-                        this.allDogs = data;
-                    });
-            });
-        } else if (e.previousPageIndex > e.pageIndex ) {
-            this.dogService.getNextOrPreviousPage(this.prevLink).subscribe((res: any) => {
-                if (res.prev) {
-                    this.prevLink = res.prev;
-                }
+        this.dogService
+            .getAllDogs(this.selectedDogBreeds, this.selectSortOption)
+            .subscribe((res: any) => {
+                this.length = res.total;
                 this.nextLink = res.next;
                 this.dogService
                     .searchDogs(res.resultIds)
@@ -156,6 +97,83 @@ export class DogListComponent implements OnInit {
                         this.allDogs = data;
                     });
             });
+    }
+
+    onSortChange(sortBy: MatSelectChange) {
+        this.selectSortOption = sortBy.value.option;
+        this.pageIndex = 0;
+        this.dogService
+            .getAllDogs(this.selectedDogBreeds, this.selectSortOption)
+            .subscribe((res: any) => {
+                this.length = res.total;
+
+                this.dogService
+                    .searchDogs(res.resultIds)
+                    .then((r) => {
+                        return r.json();
+                    })
+                    .then((data) => {
+                        this.allDogs = data;
+                    });
+            });
+    }
+
+    handlePageEvent(e: PageEvent) {
+        if (e.pageSize !== this.pageSize) {
+            this.pageIndex = 0;
+            this.dogService
+                .getAllDogs(
+                    this.selectedDogBreeds,
+                    this.selectSortOption,
+                    e.pageSize,
+                )
+                .subscribe((res: any) => {
+                    this.dogService
+                        .searchDogs(res.resultIds)
+                        .then((r) => {
+                            return r.json();
+                        })
+                        .then((data) => {
+                            this.allDogs = data;
+                        });
+                });
+        }
+
+        if (e.pageIndex > 0 && e.previousPageIndex < e.pageIndex) {
+            this.dogService
+                .getNextOrPreviousPage(this.nextLink)
+                .subscribe((res: any) => {
+                    this.prevLink = res.prev;
+
+                    if (res.next) {
+                        this.nextLink = res.next;
+                    }
+                    this.dogService
+                        .searchDogs(res.resultIds)
+                        .then((r) => {
+                            return r.json();
+                        })
+                        .then((data) => {
+                            this.allDogs = data;
+                        });
+                });
+        } else if (e.previousPageIndex > e.pageIndex) {
+            this.dogService
+                .getNextOrPreviousPage(this.prevLink)
+                .subscribe((res: any) => {
+                    if (res.prev) {
+                        this.prevLink = res.prev;
+                    }
+                    this.nextLink = res.next;
+                    this.dogService
+                        .searchDogs(res.resultIds)
+                        .then((r) => {
+                            return r.json();
+                        })
+                        .then((data) => {
+                            this.allDogs = data;
+                        });
+                });
         }
         this.pageEvent = e;
         this.length = e.length;
@@ -164,13 +182,34 @@ export class DogListComponent implements OnInit {
     }
 
     handleFavoriteDogs(event: any) {
-
         if (event.is_favorite) {
-            this.favoriteDogIds.push(event.id)
+            this.favoriteDogIds.push(event.id);
         } else {
-            const dogIdIndex = this.favoriteDogIds.indexOf(event.id)
-            this.favoriteDogIds.splice(dogIdIndex, 1)
+            const dogIdIndex = this.favoriteDogIds.indexOf(event.id);
+            this.favoriteDogIds.splice(dogIdIndex, 1);
         }
-        console.log(this.favoriteDogIds);
+    }
+
+    loadingNewBff() {
+        if (this.favoriteDogIds.length > 0) {
+            this.dogService
+                .matchDogs(this.favoriteDogIds)
+                .then((r) => {
+                    return r.json();
+                })
+                .then((dogData) => {
+                    this.dogService
+                        .searchDogs([dogData.match])
+                        .then((r) => {
+                            return r.json();
+                        })
+                        .then((dd) => {
+                            this.dialogRef.open(MatchedDogModalComponent, {
+                                width: '500px',
+                                data: { dogDetails: dd },
+                            });
+                        });
+                });
+        }
     }
 }

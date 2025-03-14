@@ -16,7 +16,11 @@ export class DogService {
         });
     }
 
-    getAllDogs(dogBreeds?: string[], sortField: string = 'name:asc', pageSize: number = 25) {
+    getAllDogs(
+        dogBreeds?: string[],
+        sortField: string = 'name:asc',
+        pageSize: number = 25,
+    ) {
         let parameters = new HttpParams();
 
         if (dogBreeds && dogBreeds.length > 0) {
@@ -28,12 +32,21 @@ export class DogService {
         parameters = parameters.append('size', pageSize);
         parameters = parameters.append('sort', sortField);
 
-
         return this.httpClient.get(`${this.baseUrl}/dogs/search`, {
             params: parameters,
             withCredentials: true,
         });
-        
+    }
+
+    async matchDogs(dogIds?: string[]) {
+        return await fetch(`${this.baseUrl}/dogs/match`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(dogIds),
+        });
     }
 
     getNextOrPreviousPage(link: string) {
