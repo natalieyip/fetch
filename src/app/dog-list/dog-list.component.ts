@@ -191,7 +191,12 @@ export class DogListComponent implements OnInit {
     }
 
     loadingNewBff() {
-        if (this.favoriteDogIds.length > 0) {
+        if(!this.favoriteDogIds.length) {
+            this.dialogRef.open(MatchedDogModalComponent, {
+                width: '500px'
+            });
+            return;
+        }
             this.dogService
                 .matchDogs(this.favoriteDogIds)
                 .then((r) => {
@@ -210,6 +215,6 @@ export class DogListComponent implements OnInit {
                             });
                         });
                 });
-        }
+        
     }
 }
