@@ -1,4 +1,25 @@
 .dog-list-container {
     display: flex;
     flex-wrap: wrap;
+    background-color: #890a74;
+    justify-content: center;
+}
+
+.dog-list-toolbar {
+    display: flex;
+    background-color: #f8f9fa;
+    margin: 48px;
+    padding: 56px;
+    border-radius: 8px;
+    box-shadow: 8px 7px 22px -5px rgba(0, 0, 0, 0.65);
+}
+
+.dog-breed-filter {
+    flex: 1;
+    margin-right: 16px;
+}
+
+.sort-by-filter {
+    flex: .25;
+    margin-right: 16px;
 }

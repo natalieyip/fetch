@@ -83,6 +83,7 @@ export class DogListComponent implements OnInit {
     onSelectedDogs(selectedDogs: MatSelectChange) {
         this.selectedDogBreeds = selectedDogs.value;
         this.pageIndex = 0;
+        this.pageSize = 25;
         this.dogService
             .getAllDogs(this.selectedDogBreeds, this.selectSortOption)
             .subscribe((res: any) => {

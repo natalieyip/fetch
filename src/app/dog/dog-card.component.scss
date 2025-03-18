@@ -1,6 +1,12 @@
 .dog-card-container {
     padding: 20px;
-    border: 5px black solid;
-    border-radius: 5px;
+    border-radius: 8px;
+    box-shadow: 8px 7px 22px -5px rgba(0, 0, 0, 0.65);
     margin: 20px;
+    background-color: #FFFF;
+}
+
+img {
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }

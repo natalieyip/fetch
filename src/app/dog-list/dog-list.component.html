@@ -1,31 +1,32 @@
-<mat-form-field>
-    <mat-label>Breeds</mat-label>
-    <mat-select
-        [formControl]="dogBreedsFilter"
-        multiple
-        (selectionChange)="onSelectedDogs($event)"
-    >
-        <mat-option
-            *ngFor="let dogBreeds of allDogBreeds"
-            [value]="dogBreeds"
-            >{{ dogBreeds }}</mat-option
+<div class="dog-list-toolbar">
+    <mat-form-field class="dog-breed-filter">
+        <mat-label>Breeds</mat-label>
+        <mat-select
+            [formControl]="dogBreedsFilter"
+            multiple
+            (selectionChange)="onSelectedDogs($event)"
         >
-    </mat-select>
-</mat-form-field>
-
-<mat-form-field>
-    <mat-label>Sort By</mat-label>
-    <mat-select (selectionChange)="onSortChange($event)">
-        <mat-option *ngFor="let opt of sortOptions" [value]="opt">{{
-            opt.optionDisplay
-        }}</mat-option>
-    </mat-select>
-</mat-form-field>
-
-<button mat-stroked-button type="button" (click)="loadingNewBff()">
-    Match Me to My New BFF
-</button>
-
+            <mat-option
+                *ngFor="let dogBreeds of allDogBreeds"
+                [value]="dogBreeds"
+                >{{ dogBreeds }}</mat-option
+            >
+        </mat-select>
+    </mat-form-field>
+    
+    <mat-form-field class="sort-by-filter">
+        <mat-label>Sort By</mat-label>
+        <mat-select (selectionChange)="onSortChange($event)">
+            <mat-option *ngFor="let opt of sortOptions" [value]="opt">{{
+                opt.optionDisplay
+            }}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    
+    <button mat-stroked-button type="button" (click)="loadingNewBff()">
+        I'm Feeling Lucky
+    </button>
+</div>
 <div class="dog-list-container">
     <div *ngFor="let dog of allDogs">
         <dog-card
@@ -34,7 +35,6 @@
         ></dog-card>
     </div>
 </div>
-
 <mat-paginator
     #paginator
     (page)="handlePageEvent($event)"
