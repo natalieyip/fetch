@@ -27,13 +27,13 @@
         I'm Feeling Lucky
     </button>
 </div>
-<div class="dog-list-container">
-    <div *ngFor="let dog of allDogs">
-        <dog-card
+<div class="dog-list-container" >
+    <ng-container *ngIf="dogs$ | async as dogs">
+        <dog-card *ngFor="let dog of dogs"
             [dogDetails]="dog"
             (favoritedDog)="handleFavoriteDogs($event)"
         ></dog-card>
-    </div>
+    </ng-container>
 </div>
 <mat-paginator
     #paginator

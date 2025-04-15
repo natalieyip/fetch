@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { from, Observable } from 'rxjs';
+import { Dog } from './dog/dog.model';
 
 @Injectable({
     providedIn: 'root',
@@ -55,14 +57,16 @@ export class DogService {
         });
     }
 
-    async searchDogs(dogIds: string[]) {
-        return await fetch(`${this.baseUrl}/dogs`, {
+    searchDogs(ids: string[]): Observable<Dog[]> {
+        return from(
+          fetch(`${this.baseUrl}/dogs`, {
             method: 'POST',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(dogIds),
-        });
-    }
+            body: JSON.stringify( ids ),
+          }).then((res) => res.json())
+        );
+      }
 }

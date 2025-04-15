@@ -11,6 +11,7 @@ import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatchedDogModalComponent } from '../matched-dog-modal/matched-dog-modal.component';
+import { BehaviorSubject, Observable, switchMap, tap } from 'rxjs';
 
 @Component({
     selector: 'dog-list',
@@ -48,6 +49,14 @@ export class DogListComponent implements OnInit {
     pageIndex = 0;
     pageSizeOptions = [25, 50, 100];
 
+    pagination$ = new BehaviorSubject<PageEvent>({
+        pageIndex: 0,
+        pageSize: 25,
+        length
+    });
+
+    dogs$: Observable<any>
+
     hidePageSize = false;
     showPageSizeOptions = true;
 
@@ -66,121 +75,140 @@ export class DogListComponent implements OnInit {
         this.dogService.getAllDogBreeds().subscribe((breeds) => {
             this.allDogBreeds = Object.values(breeds);
         });
-        this.dogService.getAllDogs().subscribe((res: any) => {
-            this.length = res.total;
-            this.nextLink = res.next;
-            this.dogService
-                .searchDogs(res.resultIds)
-                .then((r) => {
-                    return r.json();
-                })
-                .then((data) => {
-                    this.allDogs = data;
-                });
-        });
+
+        // this.dogService.getAllDogs().subscribe((res: any) => {
+        //     this.length = res.total;
+        //     this.nextLink = res.next;
+        //     this.dogService
+        //         .searchDogs(res.resultIds)
+        //         .then((r) => {
+        //             return r.json();
+        //         })
+        //         .then((data) => {
+        //             this.allDogs = data;
+        //         });
+        // });
+
+
+        this.dogs$ = this.pagination$.pipe(
+            switchMap((event: PageEvent) => {
+              return this.dogService
+                .getAllDogs(this.selectedDogBreeds, this.selectSortOption, event.pageSize)
+                .pipe(
+                  tap((res: any) => {
+                    console.log(res);
+                    this.length = res.total;
+                    this.nextLink = res.next;
+                    this.prevLink = res.prev;
+                  }),
+                  switchMap((res) => this.dogService.searchDogs(res.resultIds))
+                );
+            })
+          );
+
     }
 
     onSelectedDogs(selectedDogs: MatSelectChange) {
-        this.selectedDogBreeds = selectedDogs.value;
-        this.pageIndex = 0;
-        this.pageSize = 25;
-        this.dogService
-            .getAllDogs(this.selectedDogBreeds, this.selectSortOption)
-            .subscribe((res: any) => {
-                this.length = res.total;
-                this.nextLink = res.next;
-                this.dogService
-                    .searchDogs(res.resultIds)
-                    .then((r) => {
-                        return r.json();
-                    })
-                    .then((data) => {
-                        this.allDogs = data;
-                    });
-            });
+    //     this.selectedDogBreeds = selectedDogs.value;
+    //     this.pageIndex = 0;
+    //     this.pageSize = 25;
+    //     this.dogService
+    //         .getAllDogs(this.selectedDogBreeds, this.selectSortOption)
+    //         .subscribe((res: any) => {
+    //             this.length = res.total;
+    //             this.nextLink = res.next;
+    //             this.dogService
+    //                 .searchDogs(res.resultIds)
+    //                 .then((r) => {
+    //                     return r.json();
+    //                 })
+    //                 .then((data) => {
+    //                     this.allDogs = data;
+    //                 });
+    //         });
     }
 
     onSortChange(sortBy: MatSelectChange) {
-        this.selectSortOption = sortBy.value.option;
-        this.pageIndex = 0;
-        this.dogService
-            .getAllDogs(this.selectedDogBreeds, this.selectSortOption)
-            .subscribe((res: any) => {
-                this.length = res.total;
+    //     this.selectSortOption = sortBy.value.option;
+    //     this.pageIndex = 0;
+    //     this.dogService
+    //         .getAllDogs(this.selectedDogBreeds, this.selectSortOption)
+    //         .subscribe((res: any) => {
+    //             this.length = res.total;
 
-                this.dogService
-                    .searchDogs(res.resultIds)
-                    .then((r) => {
-                        return r.json();
-                    })
-                    .then((data) => {
-                        this.allDogs = data;
-                    });
-            });
+    //             this.dogService
+    //                 .searchDogs(res.resultIds)
+    //                 .then((r) => {
+    //                     return r.json();
+    //                 })
+    //                 .then((data) => {
+    //                     this.allDogs = data;
+    //                 });
+    //         });
     }
 
-    handlePageEvent(e: PageEvent) {
-        if (e.pageSize !== this.pageSize) {
-            this.pageIndex = 0;
-            this.dogService
-                .getAllDogs(
-                    this.selectedDogBreeds,
-                    this.selectSortOption,
-                    e.pageSize,
-                )
-                .subscribe((res: any) => {
-                    this.dogService
-                        .searchDogs(res.resultIds)
-                        .then((r) => {
-                            return r.json();
-                        })
-                        .then((data) => {
-                            this.allDogs = data;
-                        });
-                });
-        }
+     handlePageEvent(e: PageEvent) {
+    //     if (e.pageSize !== this.pageSize) {
+    //         this.pageIndex = 0;
+    //         this.dogService
+    //             .getAllDogs(
+    //                 this.selectedDogBreeds,
+    //                 this.selectSortOption,
+    //                 e.pageSize,
+    //             )
+    //             .subscribe((res: any) => {
+    //                 this.dogService
+    //                     .searchDogs(res.resultIds)
+    //                     .then((r) => {
+    //                         return r.json();
+    //                     })
+    //                     .then((data) => {
+    //                         this.allDogs = data;
+    //                     });
+    //             });
+         }
 
-        if (e.pageIndex > 0 && e.previousPageIndex < e.pageIndex) {
-            this.dogService
-                .getNextOrPreviousPage(this.nextLink)
-                .subscribe((res: any) => {
-                    this.prevLink = res.prev;
+    //     if (e.pageIndex > 0 && e.previousPageIndex < e.pageIndex) {
+    //         this.dogService
+    //             .getNextOrPreviousPage(this.nextLink)
+    //             .subscribe((res: any) => {
+    //                 this.prevLink = res.prev;
 
-                    if (res.next) {
-                        this.nextLink = res.next;
-                    }
-                    this.dogService
-                        .searchDogs(res.resultIds)
-                        .then((r) => {
-                            return r.json();
-                        })
-                        .then((data) => {
-                            this.allDogs = data;
-                        });
-                });
-        } else if (e.previousPageIndex > e.pageIndex) {
-            this.dogService
-                .getNextOrPreviousPage(this.prevLink)
-                .subscribe((res: any) => {
-                    if (res.prev) {
-                        this.prevLink = res.prev;
-                    }
-                    this.nextLink = res.next;
-                    this.dogService
-                        .searchDogs(res.resultIds)
-                        .then((r) => {
-                            return r.json();
-                        })
-                        .then((data) => {
-                            this.allDogs = data;
-                        });
-                });
-        }
-        this.pageEvent = e;
-        this.length = e.length;
-        this.pageSize = e.pageSize;
-        this.pageIndex = e.pageIndex;
-    }
+    //                 if (res.next) {
+    //                     this.nextLink = res.next;
+    //                 }
+    //                 this.dogService
+    //                     .searchDogs(res.resultIds)
+    //                     .then((r) => {
+    //                         return r.json();
+    //                     })
+    //                     .then((data) => {
+    //                         this.allDogs = data;
+    //                     });
+    //             });
+    //     } else if (e.previousPageIndex > e.pageIndex) {
+    //         this.dogService
+    //             .getNextOrPreviousPage(this.prevLink)
+    //             .subscribe((res: any) => {
+    //                 if (res.prev) {
+    //                     this.prevLink = res.prev;
+    //                 }
+    //                 this.nextLink = res.next;
+    //                 this.dogService
+    //                     .searchDogs(res.resultIds)
+    //                     .then((r) => {
+    //                         return r.json();
+    //                     })
+    //                     .then((data) => {
+    //                         this.allDogs = data;
+    //                     });
+    //             });
+    //     }
+    //     this.pageEvent = e;
+    //     this.length = e.length;
+    //     this.pageSize = e.pageSize;
+    //     this.pageIndex = e.pageIndex;
+    // }
 
     handleFavoriteDogs(event: any) {
         if (event.is_favorite) {
@@ -191,31 +219,31 @@ export class DogListComponent implements OnInit {
         }
     }
 
-    loadingNewBff() {
-        if(!this.favoriteDogIds.length) {
-            this.dialogRef.open(MatchedDogModalComponent, {
-                width: '500px'
-            });
-            return;
-        }
-            this.dogService
-                .matchDogs(this.favoriteDogIds)
-                .then((r) => {
-                    return r.json();
-                })
-                .then((dogData) => {
-                    this.dogService
-                        .searchDogs([dogData.match])
-                        .then((r) => {
-                            return r.json();
-                        })
-                        .then((dd) => {
-                            this.dialogRef.open(MatchedDogModalComponent, {
-                                width: '500px',
-                                data: { dogDetails: dd },
-                            });
-                        });
-                });
+     loadingNewBff() {
+    //     if(!this.favoriteDogIds.length) {
+    //         this.dialogRef.open(MatchedDogModalComponent, {
+    //             width: '500px'
+    //         });
+    //         return;
+    //     }
+    //         this.dogService
+    //             .matchDogs(this.favoriteDogIds)
+    //             .then((r) => {
+    //                 return r.json();
+    //             })
+    //             .then((dogData) => {
+    //                 this.dogService
+    //                     .searchDogs([dogData.match])
+    //                     .then((r) => {
+    //                         return r.json();
+    //                     })
+    //                     .then((dd) => {
+    //                         this.dialogRef.open(MatchedDogModalComponent, {
+    //                             width: '500px',
+    //                             data: { dogDetails: dd },
+    //                         });
+    //                     });
+    //             });
         
     }
 }
