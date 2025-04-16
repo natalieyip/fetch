@@ -9,7 +9,7 @@ export class AuthService {
 
     constructor() {}
 
-    async login() {
+    async login(userName: string, userEmail: string) {
         return await fetch(`${this.baseUrl}/auth/login`, {
             method: 'POST',
             credentials: 'include',
@@ -17,8 +17,8 @@ export class AuthService {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                name: 'Tess',
-                email: 'tess@gmail.com',
+                name: userName,
+                email: userEmail,
             }),
         });
     }

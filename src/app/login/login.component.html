@@ -1,18 +1,28 @@
 <div class="login-form-container">
-    <form class="login-form">
-        <h1>Fetch</h1>
-        <mat-form-field>
-            <mat-label>Name</mat-label>
-            <input matInput #message maxlength="256" placeholder="Name" />
-        </mat-form-field>
-
-        <mat-form-field>
-            <mat-label>Email</mat-label>
-            <input matInput #message maxlength="256" placeholder="Email" />
-        </mat-form-field>
-
-        <button mat-stroked-button type="button" (click)="onLoginBtn()">
-            Login
-        </button>
+    <form [formGroup]="loginForm" class="login-form" (ngSubmit)="onLoginBtn()">
+      <h1>Fetch</h1>
+  
+      <mat-form-field appearance="fill">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" maxlength="256" placeholder="Name" />
+        <mat-error *ngIf="loginForm.get('name')?.hasError('required')">
+          Name is required
+        </mat-error>
+      </mat-form-field>
+  
+      <mat-form-field appearance="fill">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" maxlength="256" placeholder="Email" />
+        <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
+          Email is required
+        </mat-error>
+        <mat-error *ngIf="loginForm.get('email')?.hasError('email')">
+          Enter a valid email
+        </mat-error>
+      </mat-form-field>
+  
+      <button mat-stroked-button type="submit">
+        Login
+      </button>
     </form>
-</div>
+  </div>
