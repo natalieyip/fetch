@@ -12,11 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatchedDogModalComponent } from '../matched-dog-modal/matched-dog-modal.component';
 import { BehaviorSubject, Observable, switchMap, tap } from 'rxjs';
-
-type PaginationTrigger = 
-  | { type: 'filters' | 'sort'; pageIndex: number; pageSize: number;}
-  | { type: 'next'; link: string }
-  | { type: 'prev'; link: string };
+import { PaginationTrigger } from '../../models/pagination-trigger.model';
 
 @Component({
     selector: 'dog-list',
