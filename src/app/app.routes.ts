@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './login/login.component';
-import { DogListComponent } from './dog-list/dog-list.component';
+import { LoginComponent } from './components/login/login.component';
+import { DogListComponent } from './components/dog-list/dog-list.component';
 
 export const routes: Routes = [
     { path: 'dogs', component: DogListComponent },

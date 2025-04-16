@@ -1,7 +1,7 @@
 import { Component, Inject, inject, Input, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { Dog } from '../dog/dog.model';
+import { Dog } from '../../models/dog.model';
 import { CommonModule } from '@angular/common';
 
 @Component({

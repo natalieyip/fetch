@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Dog } from './dog.model';
+import { Dog } from '../../models/dog.model';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 

@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { DogService } from '../dog.service';
-import { Dog } from '../dog/dog.model';
+import { DogService } from '../../services/dog/dog.service';
+import { Dog } from '../../models/dog.model';
 import { DogCardComponent } from '../dog/dog-card.component';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { SortOptions } from '../sortOptions';
+import { SortOptions } from '../../models/sort-options.model';
 import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
