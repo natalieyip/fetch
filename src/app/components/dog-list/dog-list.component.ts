@@ -150,7 +150,7 @@ export class DogListComponent implements OnInit {
         }
     }
 
-    loadingNewBff() {
+    findMyBestFriend() {
         if (!this.favoriteDogIds.length) {
             this.dialogRef.open(MatchedDogModalComponent, {
                 width: '500px',

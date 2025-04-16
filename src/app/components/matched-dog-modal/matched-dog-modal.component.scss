@@ -1,0 +1,9 @@
+.matched-dog-modal-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    &__dog-info {
+        justify-items: center;
+    }
+}

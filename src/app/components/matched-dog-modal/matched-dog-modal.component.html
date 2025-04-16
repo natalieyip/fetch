@@ -1,7 +1,6 @@
-<h2 mat-dialog-title>Your New Best Friend</h2>
-
-<div *ngIf="dogDetails; else noFaveDogs">
-    <mat-dialog-content>
+<div class="matched-dog-modal-container" *ngIf="dogDetails; else noFaveDogs">
+    <h2 mat-dialog-title>Your New Best Friend</h2>
+    <mat-dialog-content class="matched-dog-modal-container__dog-info">
         <img src="{{ dogDetails.img }}" alt="dog" width="300" height="300" />
         <div>
             Our systems has found you a new furry friend: {{ dogDetails.name }}

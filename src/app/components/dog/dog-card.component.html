@@ -1,11 +1,14 @@
 <div class="dog-card-container">
     <img src="{{ dogDetails.img }}" alt="dogImage" width="300" height="300" />
-    <div>{{ dogDetails.name }}, {{ dogDetails.age }}</div>
-    <div>{{ dogDetails.breed }}</div>
-    <div>{{ dogDetails.zip_code }}</div>
+    <div class="dog-info">
+        <div class="dog-info__name">{{ dogDetails.name }}, {{ dogDetails.age }}</div>
+        <div>{{ dogDetails.breed }}</div>
+        <div>{{ dogDetails.zip_code }}</div>
+    </div>
     <mat-icon
+        class="favorite-icon"
         [ngStyle]="
-            dogDetails.is_favorite ? { color: 'red' } : { color: 'black' }
+            dogDetails.is_favorite ? { color: ' #ffa900' } : { color: 'black' }
         "
         (click)="onFavorite()"
         aria-label="favorite-icon"
