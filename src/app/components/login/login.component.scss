@@ -14,4 +14,9 @@
     flex-flow: column;
     background-color: #ffff;
     text-align: center;
+
+    &__fetch-logo {
+        align-self: center;
+        margin-top: -80px;
+    }
 }
