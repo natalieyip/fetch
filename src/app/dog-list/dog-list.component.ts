@@ -52,10 +52,10 @@ export class DogListComponent implements OnInit {
     pagination$: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>({
         pageIndex: 0,
         pageSize: 25,
-        length: 0
+        length: 0,
     });
 
-    dogs$: Observable<Dog[]>
+    dogs$: Observable<Dog[]>;
 
     hidePageSize = false;
     showPageSizeOptions = true;
@@ -78,31 +78,36 @@ export class DogListComponent implements OnInit {
 
         this.dogs$ = this.pagination$.pipe(
             switchMap((event: PageEvent) => {
-              return this.dogService
-                .getAllDogs(this.selectedDogBreeds, this.selectSortOption, event.pageSize)
-                .pipe(
-                  tap((res: any) => {
-                    console.log(res);
-                    this.length = res.total;
-                    this.pageIndex = event.pageIndex;
-                    this.pageSize = event.pageSize;
-                    this.nextLink = res.next;
-                    this.prevLink = res.prev;
-                  }),
-                  switchMap((res) => this.dogService.searchDogs(res.resultIds))
-                );
-            })
-          );
-
+                return this.dogService
+                    .getAllDogs(
+                        this.selectedDogBreeds,
+                        this.selectSortOption,
+                        event.pageSize,
+                    )
+                    .pipe(
+                        tap((res: any) => {
+                            console.log(res);
+                            this.length = res.total;
+                            this.pageIndex = event.pageIndex;
+                            this.pageSize = event.pageSize;
+                            this.nextLink = res.next;
+                            this.prevLink = res.prev;
+                        }),
+                        switchMap((res) =>
+                            this.dogService.searchDogs(res.resultIds),
+                        ),
+                    );
+            }),
+        );
     }
 
     onSelectedDogs(selectedDogs: MatSelectChange) {
         this.selectedDogBreeds = selectedDogs.value;
         this.pageIndex = 0;
         this.pagination$.next({
-          pageIndex: 0,
-          pageSize: this.pageSize,
-          length: this.length,
+            pageIndex: 0,
+            pageSize: this.pageSize,
+            length: this.length,
         });
     }
 
@@ -110,41 +115,37 @@ export class DogListComponent implements OnInit {
         this.selectSortOption = sortBy.value.option;
         this.pageIndex = 0;
         this.pagination$.next({
-          pageIndex: 0,
-          pageSize: this.pageSize,
-          length: this.length,
+            pageIndex: 0,
+            pageSize: this.pageSize,
+            length: this.length,
         });
     }
 
-     handlePageEvent(e: PageEvent) {
-        console.log(e);
-        this.pagination$.next(e)
+    handlePageEvent(e: PageEvent) {
+        this.pagination$.next(e);
 
-    if (e.pageIndex > 0 && e.previousPageIndex < e.pageIndex) {
-        this.dogService
-            .getNextOrPreviousPage(this.nextLink)
-            .subscribe((res: any) => {
-                this.prevLink = res.prev;
-
-                if (res.next) {
-                    this.nextLink = res.next;
-                }
-                this.dogService
-                    .searchDogs(res.resultIds).subscribe();
-            });
-    } else if (e.previousPageIndex > e.pageIndex) {
-        this.dogService
-            .getNextOrPreviousPage(this.prevLink)
-            .subscribe((res: any) => {
-                if (res.prev) {
+        if (e.pageIndex > 0 && e.previousPageIndex < e.pageIndex) {
+            this.dogService
+                .getNextOrPreviousPage(this.nextLink)
+                .subscribe((res: any) => {
                     this.prevLink = res.prev;
-                }
-                this.nextLink = res.next;
-                this.dogService
-                    .searchDogs(res.resultIds).subscribe();
-            });
-    }
 
+                    if (res.next) {
+                        this.nextLink = res.next;
+                    }
+                    this.dogService.searchDogs(res.resultIds).subscribe();
+                });
+        } else if (e.previousPageIndex > e.pageIndex) {
+            this.dogService
+                .getNextOrPreviousPage(this.prevLink)
+                .subscribe((res: any) => {
+                    if (res.prev) {
+                        this.prevLink = res.prev;
+                    }
+                    this.nextLink = res.next;
+                    this.dogService.searchDogs(res.resultIds).subscribe();
+                });
+        }
     }
 
     handleFavoriteDogs(event: any) {
@@ -156,21 +157,25 @@ export class DogListComponent implements OnInit {
         }
     }
 
-     loadingNewBff() {
-        if(!this.favoriteDogIds.length) {
+    loadingNewBff() {
+        if (!this.favoriteDogIds.length) {
             this.dialogRef.open(MatchedDogModalComponent, {
-                width: '500px'
+                width: '500px',
             });
             return;
         }
-            this.dogService.matchDogs(this.favoriteDogIds).pipe(
-        switchMap((matchData) => this.dogService.searchDogs([matchData.match])))
-      .subscribe((dogDetails) => {
-        this.dialogRef.open(MatchedDogModalComponent, {
-          width: '500px',
-          data: { dogDetails },
-        });
-      });
-        
+        this.dogService
+            .matchDogs(this.favoriteDogIds)
+            .pipe(
+                switchMap((matchData) =>
+                    this.dogService.searchDogs([matchData.match]),
+                ),
+            )
+            .subscribe((dogDetails) => {
+                this.dialogRef.open(MatchedDogModalComponent, {
+                    width: '500px',
+                    data: { dogDetails },
+                });
+            });
     }
 }

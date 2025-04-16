@@ -40,18 +40,17 @@ export class DogService {
         });
     }
 
-    matchDogs(dogIds?: string[]): Observable<{ match: string; }> {
+    matchDogs(dogIds?: string[]): Observable<{ match: string }> {
         return from(
-            fetch(`${this.baseUrl}/dogs/match`, { 
-                method: 'POST', 
+            fetch(`${this.baseUrl}/dogs/match`, {
+                method: 'POST',
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(dogIds) 
-            })
-              .then((r) => r.json())
-          );
+                body: JSON.stringify(dogIds),
+            }).then((r) => r.json()),
+        );
     }
 
     getNextOrPreviousPage(link: string) {
@@ -62,14 +61,14 @@ export class DogService {
 
     searchDogs(ids: string[]): Observable<Dog[]> {
         return from(
-          fetch(`${this.baseUrl}/dogs`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(ids),
-          }).then((res) => res.json())
+            fetch(`${this.baseUrl}/dogs`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(ids),
+            }).then((res) => res.json()),
         );
-      }
+    }
 }

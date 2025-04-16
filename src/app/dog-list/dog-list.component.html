@@ -13,7 +13,7 @@
             >
         </mat-select>
     </mat-form-field>
-    
+
     <mat-form-field class="sort-by-filter">
         <mat-label>Sort By</mat-label>
         <mat-select (selectionChange)="onSortChange($event)">
@@ -22,14 +22,15 @@
             }}</mat-option>
         </mat-select>
     </mat-form-field>
-    
+
     <button mat-stroked-button type="button" (click)="loadingNewBff()">
         I'm Feeling Lucky
     </button>
 </div>
-<div class="dog-list-container" >
+<div class="dog-list-container">
     <ng-container *ngIf="dogs$ | async as dogs">
-        <dog-card *ngFor="let dog of dogs"
+        <dog-card
+            *ngFor="let dog of dogs"
             [dogDetails]="dog"
             (favoritedDog)="handleFavoriteDogs($event)"
         ></dog-card>
@@ -42,5 +43,6 @@
     [pageSize]="pageSize"
     [pageSizeOptions]="showPageSizeOptions ? pageSizeOptions : []"
     [pageIndex]="pageIndex"
-    aria-label="Select page">
+    aria-label="Select page"
+>
 </mat-paginator>
