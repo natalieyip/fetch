@@ -13,6 +13,11 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatchedDogModalComponent } from '../matched-dog-modal/matched-dog-modal.component';
 import { BehaviorSubject, Observable, switchMap, tap } from 'rxjs';
 
+type PaginationTrigger = 
+  | { type: 'filters' | 'sort'; pageIndex: number; pageSize: number;}
+  | { type: 'next'; link: string }
+  | { type: 'prev'; link: string };
+
 @Component({
     selector: 'dog-list',
     imports: [
@@ -49,10 +54,10 @@ export class DogListComponent implements OnInit {
     pageIndex = 0;
     pageSizeOptions = [25, 50, 100];
 
-    pagination$: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>({
+    pagination$: BehaviorSubject<PaginationTrigger> = new BehaviorSubject<PaginationTrigger>({
+        type: 'filters',
         pageIndex: 0,
-        pageSize: 25,
-        length: 0,
+        pageSize: 25
     });
 
     dogs$: Observable<Dog[]>;
@@ -77,78 +82,70 @@ export class DogListComponent implements OnInit {
         });
 
         this.dogs$ = this.pagination$.pipe(
-            switchMap((event: PageEvent) => {
-                return this.dogService
-                    .getAllDogs(
-                        this.selectedDogBreeds,
-                        this.selectSortOption,
-                        event.pageSize,
-                    )
-                    .pipe(
-                        tap((res: any) => {
-                            console.log(res);
-                            this.length = res.total;
-                            this.pageIndex = event.pageIndex;
-                            this.pageSize = event.pageSize;
-                            this.nextLink = res.next;
-                            this.prevLink = res.prev;
-                        }),
-                        switchMap((res) =>
-                            this.dogService.searchDogs(res.resultIds),
-                        ),
-                    );
-            }),
-        );
+            switchMap((event) => {
+              if (event.type === 'next' || event.type === 'prev') {
+                return this.dogService.getNextOrPreviousPage(event.link).pipe(
+                  tap((res: any) => {
+                    this.length = res.total;
+                    this.nextLink = res.next;
+                    this.prevLink = res.prev;
+                  }),
+                  switchMap(res => this.dogService.searchDogs(res.resultIds))
+                );
+              } else {
+                return this.dogService.getAllDogs(
+                  this.selectedDogBreeds,
+                  this.selectSortOption,
+                  event.pageSize
+                ).pipe(
+                  tap((res: any) => {
+                    this.length = res.total;
+                    this.pageIndex = event.pageIndex;
+                    this.pageSize = event.pageSize;
+                    this.nextLink = res.next;
+                    this.prevLink = res.prev;
+                  }),
+                  switchMap(res => this.dogService.searchDogs(res.resultIds))
+                );
+              }
+            })
+          );
     }
 
     onSelectedDogs(selectedDogs: MatSelectChange) {
         this.selectedDogBreeds = selectedDogs.value;
-        this.pageIndex = 0;
-        this.pagination$.next({
-            pageIndex: 0,
-            pageSize: this.pageSize,
-            length: this.length,
-        });
+        this.pagination$.next({ type: 'filters', pageIndex: 0, pageSize: this.pageSize });
+
     }
 
     onSortChange(sortBy: MatSelectChange) {
         this.selectSortOption = sortBy.value.option;
-        this.pageIndex = 0;
-        this.pagination$.next({
-            pageIndex: 0,
-            pageSize: this.pageSize,
-            length: this.length,
-        });
+        this.pagination$.next({ type: 'filters', pageIndex: 0, pageSize: this.pageSize });
     }
 
-    handlePageEvent(e: PageEvent) {
-        this.pagination$.next(e);
+    handlePageEvent(event: PageEvent) {
+        const isNext = event.pageIndex > this.pageIndex;
+        const isPrev = event.pageIndex < this.pageIndex;
+        const pageSizeChange = event.pageSize !== this.pageSize;
 
-        if (e.pageIndex > 0 && e.previousPageIndex < e.pageIndex) {
-            this.dogService
-                .getNextOrPreviousPage(this.nextLink)
-                .subscribe((res: any) => {
-                    this.prevLink = res.prev;
-
-                    if (res.next) {
-                        this.nextLink = res.next;
-                    }
-                    this.dogService.searchDogs(res.resultIds).subscribe();
-                });
-        } else if (e.previousPageIndex > e.pageIndex) {
-            this.dogService
-                .getNextOrPreviousPage(this.prevLink)
-                .subscribe((res: any) => {
-                    if (res.prev) {
-                        this.prevLink = res.prev;
-                    }
-                    this.nextLink = res.next;
-                    this.dogService.searchDogs(res.resultIds).subscribe();
-                });
+        if (pageSizeChange) {
+            this.pagination$.next({
+                type: 'filters',
+                pageIndex: 0,
+                pageSize: event.pageSize
+              });
+              this.pageIndex = 0;
+        } else if (isNext && this.nextLink) {
+          this.pagination$.next({ type: 'next', link: this.nextLink });
+          this.pageIndex= event.pageIndex;
+        } else if (isPrev && this.prevLink) {
+          this.pagination$.next({ type: 'prev', link: this.prevLink });
+          this.pageIndex= event.pageIndex;
         }
+        this.pageSize = event.pageSize;
     }
 
-    handleFavoriteDogs(event: any) {
+    handleFavoriteDogs(event: Dog) {
         if (event.is_favorite) {
             this.favoriteDogIds.push(event.id);
         } else {
