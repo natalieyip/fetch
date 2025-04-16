@@ -1,6 +1,6 @@
 {
   "routes": {
-    "/": {},
-    "/dogs": {}
+    "/": "index.html",
+    "/dogs": "dogs/index.html"
   }
 }
